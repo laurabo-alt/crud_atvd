@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achados e perdidos</title>
+</head>
+<body>
+    <h1> ssitema de achados e perdidos</h1>
+    <from id="from-cadastro">
+    <h3>cadastrar novo item encontrado</h3>
+    <input type="text" id="titulo" placeholder="titulo do item (ex:garrafa azul)" required>
+    <input type="text" id="descricao" placehlder="descricao (cor, marca, detalhe...)">
+    <input type="text" id="local_encontrado" placeholder="local encontrado (ex:quadras)" required>
+    <input type="date" id="data_encontro" required>
+    <button type="submit"> cadastrar item</button>
+    </from>
+
+    <table>
+        <thead>
+            <tr>
+               <th>ID</th>
+                <th>titulo</th>
+                <th>descricao</th>
+                <th>local</th>
+                <th>data</th>
+                <th>status</th>
+                <th>ações</th>
+            </tr>
+        </thead>
+    </table>
+</body>
+</html>
