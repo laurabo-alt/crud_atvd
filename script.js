@@ -1,21 +1,21 @@
-const api_url="http://localhost:5000/itens";
+const api_url = "http://localhost:5000/itens";
 document.addEventListener("DOMContentLoaded", () => {
     carregaritens();
     document.getElementById("from-cadastro").addEventListener("submit", cadastraritem);
 });
 async function carregaritens() {
-    try{
-        const resposta = await fetch(api_url); 
+    try {
+        const resposta = await fetch(api_url);
         const itens = await resposta.json();
         const tabela = document.getElementById("tabela-itens");
         tabela.innerHTML = "";
-        itens.forEach (item => {
-        const tr = document.createElement("tr");
-        const botaoacao = item.status === "disponivel"
-        ? `<button onclick = "devolveritem(${item.id})">devolver</button>`
-        : `<span>retirado por: <b>${item.retirado_por}</b></span>`;
-        
-        tr.innerHTML = `
+        itens.forEach(item => {
+            const tr = document.createElement("tr");
+            const botaoacao = item.status === "disponivel"
+                ? `<button onclick = "devolveritem(${item.id})">devolver</button>`
+                : `<span>retirado por: <b>${item.retirado_por}</b></span>`;
+
+            tr.innerHTML = `
         <td>${item.id}</td>
         <td>${item.titulo}</td>
         <td>${item.descricao || "-"}</td>
@@ -28,38 +28,63 @@ async function carregaritens() {
         style = "background:#b91c1c;">excluir</button>
         </td>
         `;
-        tabela.appendChild(tr);
+            tabela.appendChild(tr);
         });
     } catch (erro) {
         console.error("erro ao encontrar com a API do python:", erro);
     }
 }
-async function cadastraritem(evento){
-evento.preventdefault();
+async function cadastraritem(evento) {
+    evento.preventdefault();
 
-const novoitem = {
-    titulo: document.getElementById("titulo").value,
-    descricao: document.getElementById("descricao").value,
-    local_encontrado: document.getElementById("local_encontrado").value,
-    data_encontro: document.getElementById("data_encontro").value
-};
-const resposta = await fetch(api_url, {
-    method: "post",
-    headers: {"content-type": "applcation/json"},
-    body: JSON.stringify(novoitem)
-});
+    const novoitem = {
+        titulo: document.getElementById("titulo").value,
+        descricao: document.getElementById("descricao").value,
+        local_encontrado: document.getElementById("local_encontrado").value,
+        data_encontro: document.getElementById("data_encontro").value
+    };
+    const resposta = await fetch(api_url, {
+        method: "post",
+        headers: { "content-type": "applcation/json" },
+        body: JSON.stringify(novoitem)
+    });
 
-if (resposta.ok){
-    document.getElementById("from-cadrasto").reset();
-    carregaritens();
-} else {
-    const erro = await resposta.json();
-    alert("erro ao cadastrar:" + erro.erro);
- }
+    if (resposta.ok) {
+        document.getElementById("from-cadrasto").reset();
+        carregaritens();
+    } else {
+        const erro = await resposta.json();
+        alert("erro ao cadastrar:" + erro.erro);
+    }
 }
 
 async function devolveritem(id) {
     const nomepessoa = prompt("digite o nome de quem esta retirando o item:");
-    if (!nomepessoa) return; 
+    if (!nomepessoa) return;
+
+    const resposta = await fetch(`${api_url}/${id}/devolver`, {
+    method: "put",
+    heards: {"content-type": "application/json"},
+    body: JSON.stringify({retirado_por: nomepessoa})
+    });
+
+    if (resposta.ok) {
+        carregaritens();
+    } else {
+        alert("erro ao registrar devoluçâo.");
+    }
 }
+
+async function deletaritem(id) {
+    if (!confirm("tem certeza que deseja excluir este registro?")) return;
     
+    const resposta = await fetch (`${api_url}/${id}`,{
+        method: "DELETE"
+    });
+
+    if(resposta.ok) {
+        carregaritens();
+    } else{
+        alert("erro ao excluir item.");
+    }
+}
